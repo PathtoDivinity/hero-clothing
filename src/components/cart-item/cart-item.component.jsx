@@ -1,17 +1,40 @@
-import './cart-item.styles.scss';
+import { useContext } from 'react';
 
-const CartItem = ({cartItem}) => {
-    const {name, imageUrl, price, quantity} = cartItem;
+import {CartItemContainer, ItemDetails, RemoveButton, QuantitySelect} from './cart-item.styles';
+
+import { CartContext } from '../../contexts/cart.context';
+
+const CartItem = ({cartItem, updateItemQuantity}) => {
+    const {id, name, imageUrl, price, quantity} = cartItem;
+    const {removeItemFromCart} = useContext(CartContext);
+
+    const handleQuantityChange = (event) => {
+        updateItemQuantity(id, parseInt(event.target.value));
+    };
+    const removeItemHandler = () => removeItemFromCart(cartItem);
     return (
-        <div className='cart-item-container'>
+        <CartItemContainer>
             <img src={imageUrl} alt={`${name}`}/>
-            <div className='item-details'>
+            <ItemDetails>
                 <span className='name'>{name}</span>
                 <span className='price'>
-                    {quantity} x ${price}
+                <QuantitySelect 
+                    id={`quantity-select-${id}`}
+                    name={`quantity-${id}`}
+                    value={quantity} 
+                    onChange={handleQuantityChange}
+                >
+                    {[...Array(10).keys()].map(num => (
+                        <option key={num + 1} value={num + 1}>
+                            {num + 1}
+                        </option>
+                    ))}
+                </QuantitySelect> x ${price}   
                 </span>    
-            </div>
-        </div>    
+            </ItemDetails>
+            <RemoveButton onClick={removeItemHandler}>&#10005;</RemoveButton>    
+        </CartItemContainer>
+            
     )
 }
 
